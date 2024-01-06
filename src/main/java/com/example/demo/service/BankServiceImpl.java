@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.AccountDto;
 import com.example.demo.dto.BankDto;
 import com.example.demo.entity.Bank;
 import com.example.demo.mapper.AccountMapper;
@@ -9,6 +10,7 @@ import com.example.demo.repository.BankDao;
 import jakarta.persistence.Id;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class BankServiceImpl implements BankService{
@@ -19,6 +21,16 @@ public class BankServiceImpl implements BankService{
     public BankServiceImpl(BankDao bankDao) {
         this.bankDao = bankDao;
     }
+
+
+    @Override
+    public BankDto saveBank(BankDto bankDto){
+        Bank bank = bankDao.saveBank(bankMapper.toEntity(bankDto));
+        return bankMapper.toDto(bank);
+
+    }
+
+
 
     @Override
     public List<BankDto> getAllBanks() {
@@ -48,5 +60,11 @@ public class BankServiceImpl implements BankService{
     @Override
     public boolean removeBank(int bankId) {
         return bankDao.removeBank(bankId);
+    }
+    @Override
+    public BankDto getBankById(int bankId) {
+
+        return bankMapper.toDto(bankDao.getBankById(bankId));
+
     }
 }

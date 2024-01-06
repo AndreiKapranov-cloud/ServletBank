@@ -1,6 +1,7 @@
 package com.example.demo.repository;
 import com.example.demo.dto.AccountDto;
 import com.example.demo.entity.Account;
+import com.example.demo.entity.Bank;
 
 
 import java.sql.Connection;
@@ -11,16 +12,16 @@ public interface AccountDao {
     List<Account> getAllAccounts();
     List<Account> getAccountsByBank(int bankId);
     Account getAccountById(int accountId);
-    void saveAccount(Account account);
+    Account saveAccount(Account account) throws SQLException;
     boolean removeAccount(int accountId);
     List<Account> getAccountsByTransaction(int transactionId);
-    void transfer(int amount, Connection conn, int fromAccountId,int toAccountId) throws SQLException;
+    void transfer(int amount, int fromAccountId,int toAccountId) throws SQLException;
 
-    int depositWithoutTransaction(int amount,Connection conn,int accountId);
+    int depositWithoutTransaction(int amount,int accountId);
 
-    void deposit(int amount,Connection conn,int accountId);
-    int getBalance(Connection conn,int accountId);
-    int withdraw(int amount, Connection conn, int accountId) throws SQLException;
+    void deposit(int amount,int accountId);
+    int getBalance(int accountId);
+    int withdraw(int amount, int accountId) throws SQLException;
 
 
 

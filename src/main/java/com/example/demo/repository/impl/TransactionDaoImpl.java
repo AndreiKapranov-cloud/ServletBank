@@ -21,7 +21,7 @@ public class TransactionDaoImpl implements TransactionDao {
 
     @Override
     public List<Transaction> getAllTransactions() {
-        String GETALLTR = "select * from transactions";
+        String GETALLTR = "select * from transactions where is_deleted = false";
 
         try {
             PreparedStatement statement = connection.prepareStatement(GETALLTR);
@@ -32,7 +32,7 @@ public class TransactionDaoImpl implements TransactionDao {
 
             while (resultSet.next()) {
                 Transaction transaction = new Transaction();
-                //   bank.setName(resultSet.getString(1));
+
                 transaction.setTransactionId(resultSet.getInt(1));
                 transaction.setAmount(resultSet.getInt(2));
                 transaction.setTimestamp(resultSet.getTimestamp(3));

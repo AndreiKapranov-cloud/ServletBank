@@ -26,7 +26,7 @@ public class BankDaoImpl implements BankDao {
         }
         @Override
         public  List<Bank> getAllBanks(){
-         String GETALLBANKS = "select * from Bank";
+         String GETALLBANKS = "select * from Bank where is_deleted = false";
 
         try {
         PreparedStatement statement = connection.prepareStatement(GETALLBANKS);
@@ -48,6 +48,34 @@ public class BankDaoImpl implements BankDao {
         throw new RuntimeException();
       }
   }
+
+
+
+
+    @Override
+    public Bank saveBank(Bank bank) {
+
+        final String INSERT = "INSERT INTO bank (name) VALUES (?)";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(INSERT,Statement.RETURN_GENERATED_KEYS)) {
+            preparedStatement.setString(1, bank.getName());
+            int rowsAffected = preparedStatement.executeUpdate();
+            if (rowsAffected == 1) {
+                try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        int generatedId = generatedKeys.getInt(1);
+                        bank.setBankId(generatedId);
+                    } else {
+                        throw new SQLException("Failed to get generated key.");
+                    }
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
+        }
+        return bank;
+          } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
         @Override
         public Bank getBankByName(String name) {
 
@@ -99,7 +127,7 @@ public class BankDaoImpl implements BankDao {
 
         @Override
         public boolean updateBank(Bank updatedBank) {
-            final String UPDATEBANK = "UPDATE bank SET name = ? WHERE bankId = ?";
+            final String UPDATEBANK = "UPDATE bank SET name = ? WHERE bank_id = ?";
 
             try {
                 PreparedStatement ps = connection.prepareStatement(UPDATEBANK);
@@ -126,13 +154,10 @@ public class BankDaoImpl implements BankDao {
 
                 insertStmt1.setInt(1, bankId);
 
-                insertStmt1.executeUpdate();
                 int result = insertStmt1.executeUpdate();
                 if (result > 0) {
-                    connection.commit();
                     return true;
                 } else {
-                    connection.rollback();
                     return false;
                 }
 
@@ -141,5 +166,29 @@ public class BankDaoImpl implements BankDao {
             }
 
         }
+    @Override
+    public Bank getBankById(int bankId) {
+        final String GETBYID = "select * from bank where is_deleted = false AND bank_id = ?";
+        try {
+            PreparedStatement statement = connection.prepareStatement(GETBYID);
+
+            statement.setInt(1, bankId);
+            ResultSet resultSet = statement.executeQuery();
+
+            Bank bank = new Bank();
+            if (resultSet.next()) {
+
+                bank.setBankId(resultSet.getInt(1));
+                bank.setName(resultSet.getString(2));
+
+            }
+            return bank;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
     }
+}
+
+

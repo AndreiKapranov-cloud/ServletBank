@@ -1,6 +1,8 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.AccountDto;
+import com.example.demo.entity.Account;
+import com.example.demo.entity.Bank;
 import com.example.demo.mapper.AccountMapper;
 import com.example.demo.repository.AccountDao;
 
@@ -15,7 +17,6 @@ public class AccountServiceImpl implements AccountService{
     private final AccountDao accountDao;
 
     public AccountServiceImpl(AccountDao accountDao) {
-
         this.accountDao = accountDao;
     }
 
@@ -30,9 +31,9 @@ public class AccountServiceImpl implements AccountService{
     }
 
     @Override
-    public AccountDto getAccountById(int AccountId) {
+    public AccountDto getAccountById(int accountId) {
 
-        return accountMapper.toDto(accountDao.getAccountById(AccountId));
+        return accountMapper.toDto(accountDao.getAccountById(accountId));
 
     }
     @Override
@@ -44,9 +45,10 @@ public class AccountServiceImpl implements AccountService{
     }
 
     @Override
-    public void saveAccount(AccountDto accountDto) {
+    public AccountDto saveAccount(AccountDto accountDto) throws SQLException {
 
-        accountDao.saveAccount(accountMapper.toEntity(accountDto));
+       Account account = accountDao.saveAccount(accountMapper.toEntity(accountDto));
+        return accountMapper.toDto(account);
     }
 
     @Override
@@ -64,23 +66,23 @@ public class AccountServiceImpl implements AccountService{
     }
 
     @Override
-    public void transfer(int amount, Connection conn, int fromAccountId, int toAccountId) throws SQLException {
-        accountDao.transfer(amount,conn,fromAccountId,toAccountId);
+    public void transfer(int amount, int fromAccountId, int toAccountId) throws SQLException {
+        accountDao.transfer(amount,fromAccountId,toAccountId);
 
     }
 
     @Override
     public void deposit(int amount, Connection conn, int accountId) {
-        accountDao.deposit(amount,conn,accountId);
+        accountDao.deposit(amount,accountId);
     }
 
     @Override
     public int getBalance(Connection conn, int accountId) {
-        return accountDao.getBalance(conn,accountId);
+        return accountDao.getBalance(accountId);
     }
 
     @Override
     public int withdraw(int amount, Connection conn, int accountId) throws SQLException {
-        return accountDao.withdraw(amount,conn,accountId);
+        return accountDao.withdraw(amount,accountId);
     }
 }
